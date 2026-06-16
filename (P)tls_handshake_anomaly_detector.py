@@ -51,6 +51,9 @@ def tls_audit(net_strm: np.ndarray)  -> dict:
         "threat_percentage": round(overallthreat, 2)
     }
 
+
+#TESTING IT OUT
+
 if __name__ == "__main__":
     np.random.seed(42)
     total_records=10000
@@ -60,7 +63,7 @@ if __name__ == "__main__":
     b_sent   = np.random.randint(500, 5000, size=total_records)
     b_recv   = np.random.randint(2000, 20000, size=total_records)
     v_days   = np.random.randint(90, 365, size=total_records)
-
+    #INJECTING ANOMALIES
     ciphers[150] = 5;   b_sent[150] = 85000;  b_recv[150] = 1200
     ciphers[920] = 4;   b_sent[920] = 120000; b_recv[920] = 800
     v_days[412] = 3
@@ -69,6 +72,7 @@ if __name__ == "__main__":
     simulatedtrfc = np.column_stack((conn_ids, ciphers, b_sent, b_recv, v_days))
 
     forensic_report=tls_audit(simulatedtrfc)
+    #FINAL OUTPUT
     print("-----------------------------------------------------")
     print("        IITK TLS TRAFFIC ENGINE SECURITY AUDIT     ")
     print("-----------------------------------------------------")

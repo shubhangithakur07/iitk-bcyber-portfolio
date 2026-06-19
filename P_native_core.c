@@ -1,7 +1,18 @@
+/* * SECURITY ENGINE CORE - TELEMETRY AUDIT
+ * Author: Shubhangithakur07
+ * Project:ProcAudit-Engine( IITK Portfolio Submission)
+ */
+
 #include <stdio.h>
 #include <stdint.h>
 
-// Explicit 64-bit alignment for C/Python cross-compilation
+#define PID_KERNEL 4
+#define PID_SYSTEM 76
+
+/* 
+ * Cross-platform compatibility check 
+ * total struc size made to be 32bytes -precisely!
+ */
 typedef struct {
     uint64_t pid;
     double ram_bytes;
@@ -9,25 +20,27 @@ typedef struct {
     uint64_t open_handles;
 } ProcessTelemetry;
 
-/**
- * ELITE SYSTEM LAYER: Low-level bitwise filtering executed natively.
- * Evaluates kernel streams at hardware level, filtering known false positives.
+/* 
+ * we'll scan for processes with memory usage but 0 active threads.
+ * also filter out our whitelists to minimize false positives.
  */
 void process_telemetry_stream(const ProcessTelemetry* stream, int row_count, uint64_t* critical_alerts, int* alert_count) {
+    if (!stream || !critical_alerts || !alert_count) return;
+    
     *alert_count = 0;
     
     for (int i = 0; i < row_count; i++) {
-        // Condition: 0 threads but holding active physical RAM pages
+        // zero thread activity but have memry footprint
         if (stream[i].thread_count == 0 && stream[i].ram_bytes > 0) {
             
-            // Vector Mask Exception: Explicitly catch PID 4 and PID 76 (System Infrastructure)
-            // Using low-level bitwise evaluations for O(1) clock-cycle processing
-            if (stream[i].pid == 4 || stream[i].pid == 76) {
-                continue; // Whitelisted native kernel infrastructure - Bypass alert
+            // Skip infrastructure processes (Kernel and System)
+            if (stream[i].pid == PID_KERNEL || stream[i].pid == PID_SYSTEM) {
+                continue; 
             }
             
-            // If it escapes the hardware whitelist, it's an active Stealth Threat
+    
             critical_alerts[*alert_count] = stream[i].pid;
             (*alert_count)++;
         }
     }
+}

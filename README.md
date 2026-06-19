@@ -13,6 +13,7 @@ A high-performance, vectorized SIEM (Security Information and Event Management) 
 * **`(P)defective_sensor_cleaner.py`**: Data sanitization utility for incoming hardware telemetry streams.
 * **`anomaly_detector.py`**: Core mathematical threshold verification library.
 * **`P_performance_profiler.py`**: High-resolution performance benchmarking and heap allocation telemetry suite.
+  
 
 ---
 
@@ -54,4 +55,11 @@ To validate the scalability and computational bounds of the whitelist architectu
 * **Loop-Free Vectorization:** Achieved a processing latency of **1.2225 ms** over a 100,000-row telemetry matrix, confirming that the engine completely bypasses Python interpreter loops by relying on contiguous C-aligned memory arrays.
 * **Deterministic Exception Validation:** Verified exception-free edge handling. The forced injection of PID 76 (0 active threads) was safely intercepted and neutralized by the whitelist filter, bringing the global threat score down to a true `0.0%`.
 * **Empirical $O(1)$ Space Complexity:** By utilizing native heap allocation tracing (`tracemalloc`), the engine proved that its peak memory footprint remains flat and bounded at just **489.23 KB**. Calculations are executed as shared memory views (slices) rather than costly data duplications, minimizing memory fragmentation and preventing runtime out-of-memory (OOM) failures under heavy throughput conditions.
+
+  ---
+
+## ⚡ Polyglot Optimization: Native C Acceleration Layer
+To mirror industrial EDR (Endpoint Detection & Response) system requirements, a high-performance cross-language processing block was introduced (`native_core.c`). By shifting raw matrix ingestion loops from the interpreted Python runtime into a compiled, native C-contiguous shared library (`.dll`), conditional branch testing occurs at the bare-metal hardware layer.
+
+The architecture employs `ctypes` mappings to stream telemetry data via explicit structured memory blocks, successfully avoiding Python memory thrashing allocations and ensuring scalable operation under heavy network or system exploitation scenarios.
 

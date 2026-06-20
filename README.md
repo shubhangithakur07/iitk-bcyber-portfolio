@@ -3,16 +3,26 @@
 A high-performance, vectorized SIEM (Security Information and Event Management) analytics engine designed to intercept low-level operating system telemetry and perform loop-free threat isolation using NumPy matrix masking.
 
 ## 🚀 Active Production Components
+
+### Core Analytics & Threat Detection
 * **`(P)live_system_audit.py`**: Live Windows kernel ingestion and vector threat scanning pipeline.
 * **`(P)firewall_audit.py`**: Vectorized network firewall packet filtering.
 * **`(P)memory_integrity_detector.py`**: Real-time memory page allocation and W^X vulnerability scanning.
 * **`(P)tls_handshake_anomaly_detector.py`**: Edge-case TLS data exfiltration ratio tracking.
 * **`(P)tls_handshake_anomaly_detector_advanced.py`**: Advanced Multi-session cryptographic handshake validation.
+
+### Distributed Telemetry & Data Sanitization
 * **`(P)multistation_variance_audit.py`**: Distributed system vector variance profiling.
 * **`(P)satellite_signal_thresholding.py`**: Telemetry signal baseline anomaly processing.
 * **`(P)defective_sensor_cleaner.py`**: Data sanitization utility for incoming hardware telemetry streams.
+
+### Engine Infrastructure & Performance
 * **`anomaly_detector.py`**: Core mathematical threshold verification library.
 * **`P_performance_profiler.py`**: High-resolution performance benchmarking and heap allocation telemetry suite.
+* **`P_bridge.py`**: Python-to-C FFI (Foreign Function Interface) management bridge.
+* **`P_native_core.c`**: Compiled C-acceleration layer for hardware-level event processing.
+* **`P_test_engine.py`**: Automated test suite for validation of security safeguards.
+* **`(P)test_vector_engine.py`**: Specialized unit testing for vector math integrity.
   
 
 ---
@@ -62,4 +72,17 @@ To validate the scalability and computational bounds of the whitelist architectu
 To mirror industrial EDR (Endpoint Detection & Response) system requirements, a high-performance cross-language processing block was introduced (`native_core.c`). By shifting raw matrix ingestion loops from the interpreted Python runtime into a compiled, native C-contiguous shared library (`.dll`), conditional branch testing occurs at the bare-metal hardware layer.
 
 The architecture employs `ctypes` mappings to stream telemetry data via explicit structured memory blocks, successfully avoiding Python memory thrashing allocations and ensuring scalable operation under heavy network or system exploitation scenarios.
+### 🧪 Validation & Test Suite Results
+To ensure the integrity of the detection logic, the engine was subjected to a comprehensive unit test suite, confirming that the native bridge correctly handles edge cases, kernel whitelisting, and threat isolation.
+
+```text
+[RUNNING] Executing IITK Portfolio Test Suite validations...
+test_empty_payload_safeguard (__main__.TestNativeSecurityEngine.test_empty_payload_safeguard) ... ok
+test_kernel_whitelist_bypass (__main__.TestNativeSecurityEngine.test_kernel_whitelist_bypass) ... ok
+test_stealth_threat_detection (__main__.TestNativeSecurityEngine.test_stealth_threat_detection) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.043s
+
+OK
 

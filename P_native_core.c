@@ -2,17 +2,9 @@
  * Author: Shubhangithakur07
  * Project:ProcAudit-Engine( IITK Portfolio Submission)
  */
-
 #include <stdio.h>
 #include <stdint.h>
 
-#define PID_KERNEL 4
-#define PID_SYSTEM 76
-
-/* 
- * Cross-platform compatibility check 
- * total struc size made to be 32bytes -precisely!
- */
 typedef struct {
     uint64_t pid;
     double ram_bytes;
@@ -20,27 +12,43 @@ typedef struct {
     uint64_t open_handles;
 } ProcessTelemetry;
 
-/* 
- * we'll scan for processes with memory usage but 0 active threads.
- * also filter out our whitelists to minimize false positives.
+/**
+ * Parses telemetry buffer to isolate zombie/ghost processes holding RAM with 0 threads.
+ * Skips trusted kernel PIDs (4, 76).
  */
-void process_telemetry_stream(const ProcessTelemetry* stream, int row_count, uint64_t* critical_alerts, int* alert_count) {
-    if (!stream || !critical_alerts || !alert_count) return;
+int32_t process_telemetry_stream(const ProcessTelemetry* dataset, int32_t total_rows, uint64_t* alert_buffer, int32_t* total_alerts) {
     
-    *alert_count = 0;
-    
-    for (int i = 0; i < row_count; i++) {
-        // zero thread activity but have memry footprint
-        if (stream[i].thread_count == 0 && stream[i].ram_bytes > 0) {
-            
-            // Skip infrastructure processes (Kernel and System)
-            if (stream[i].pid == PID_KERNEL || stream[i].pid == PID_SYSTEM) {
-                continue; 
-            }
-            
-    
-            critical_alerts[*alert_count] = stream[i].pid;
-            (*alert_count)++;
-        }
+    // Hard fail on invalid memory addresses
+    if (!dataset || !alert_buffer || !total_alerts) {
+        return -1;
     }
+
+    // Block empty or corrupted stream sizes
+    if (total_rows <= 0) {
+        *total_alerts = 0;
+        return -2; 
+    }
+
+    int32_t tracked_count = 0;
+    int32_t idx = 0;
+
+    // Process stream using direct array indexing instead of pointer walking
+    while (idx < total_rows) {
+        
+        // Target anomalous state: inactive threads but unreleased memory
+        if (dataset[idx].thread_count == 0 && dataset[idx].ram_bytes > 0.0) {
+            
+            uint64_t target_pid = dataset[idx].pid;
+            
+            // Filter out whitelisted core infrastructure engines
+            if (target_pid != 4 && target_pid != 76) {
+                alert_buffer[tracked_count] = target_pid;
+                tracked_count++;
+            }
+        }
+        idx++;
+    }
+
+    *total_alerts = tracked_count;
+    return 0; // Execution completed cleanly
 }

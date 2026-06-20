@@ -1,0 +1,43 @@
+"""
+IITK Portfolio Submission - Security Engine Unit Tests
+Automated validation suite for the low-level process auditing pipeline.
+Developer: Shubhangithakur07
+"""
+
+import os
+import unittest
+from P_bridge import run_audit as execute_native_core_audit
+
+class TestNativeSecurityEngine(unittest.TestCase):
+
+    def setUp(self):
+        """Initialize reusable mock variables for the test lifecycle."""
+        self.rogue_pid = 999
+        self.kernel_pid = 76
+
+    def test_stealth_threat_detection(self):
+        # Target: Orphan process holding memory space while reporting 0 threads
+        payload = [[self.rogue_pid, 500000.0, 0, 10]]
+        flagged = execute_native_core_audit(payload)
+        
+        # Verify the pipeline successfully caught the target anomalous PID
+        self.assertIn(self.rogue_pid, flagged)
+
+    def test_kernel_whitelist_bypass(self):
+        # Target: Idle system infrastructure processes using memory
+        payload = [[self.kernel_pid, 1200000.0, 0, 45]]
+        flagged = execute_native_core_audit(payload)
+        
+        # Core infrastructure must be filtered out cleanly
+        self.assertEqual(len(flagged), 0)
+
+    def test_empty_payload_safeguard(self):
+        # Border case: Absolute empty array stream submitted to the ctypes boundary
+        empty_matrix = []
+        flagged = execute_native_core_audit(empty_matrix)
+        
+        self.assertEqual(flagged, [])
+
+if __name__ == "__main__":
+    print("[RUNNING] Executing IITK Portfolio Test Suite validations...")
+    unittest.main(verbosity=2)

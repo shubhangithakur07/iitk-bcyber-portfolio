@@ -1,4 +1,27 @@
 # Quantitative Security Analytics Engine
+![Security Engine Dashboard](./security_analytics_dashboard.png)
+
+## 🚀 Quickstart & Reproduction Guide
+
+To deploy and execute the validation benchmarking suite locally, initialize your shell environment using the following pipeline:
+
+```powershell
+# 1. Clone the core security architecture
+git clone https://github.com/shubhangithakur07/iitk-bcyber-portfolio
+cd quantiative_engine
+
+# 2. Initialize and activate isolated virtual environment
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+
+# 3. Ingest deterministic dependencies
+pip install -r requirements.txt
+
+# 4. Execute the mathematical unit-testing verification suite
+python -m unittest P_test_vector_engine.py
+
+# 5. Run the high-density performance matrix profiler
+python P_performance_profiler.py
 
 A high-performance, vectorized SIEM (Security Information and Event Management) analytics engine designed to intercept low-level operating system telemetry and perform loop-free threat isolation using NumPy matrix masking.
 
